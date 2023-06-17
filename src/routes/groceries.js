@@ -2,6 +2,7 @@ const { Router} = require('express');
 const router = Router();
 
 
+
 const groceryList = [{
         item: 'milk',
         price: 2.33
@@ -16,9 +17,19 @@ const groceryList = [{
     }
 ];
 
-// Get all groceries
-router.get('/', (req, res) => res.send(groceryList));
+router.use((req, res, next) => {
+    console.log('Inside Groceries Auth Check Middleware');
+    console.log(req.user);
+    if (req.user) next();
+    else res.send(401);
+  });
+  
 
+// Get all groceries
+router.get('/', (req, res) => {
+    res.cookie('grocery', 'cookie');
+    res.send(groceryList);
+});
 // Get a specific grocery by id
 router.get('/:id', (req, res) => {
     const id = req.params.id;
@@ -71,5 +82,29 @@ router.delete('/:id', (req, res) => {
         res.status(404).send('Grocery not found');
     }
 });
+
+router.get('/cart', (req, res) => {
+    const {cart} = req.session;
+    if (!cart) {
+        res.send("Cart is empty");
+    } else {
+        res.send(cart);
+    }
+});
+
+router.post('/cart/item', (req, res) => {
+    const {item, price} = req.body;
+    const newItem = {item, price};
+    const {cart} = req.session;
+    if (cart) {
+        req.session.cart.items.push(newItem);
+    } else {
+        req.session.cart = {
+            items: [newItem]
+        }
+    }
+    res.send(201);
+});
+
 
 module.exports = router;
