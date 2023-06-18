@@ -3,6 +3,7 @@ const router = Router();
 const passport = require('passport');
 const User = require('../database/schemas/User');
 const  { hashPassword, comparePasswords } = require('../utils/helpers');
+const { authRegisterController } = require('../controllers/auth');
 
 
 // router.post('/login',async  (req, res) => {
@@ -30,23 +31,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 
 
 
-router.post('/register', async (req, res) => {
-    const {username, email,} = req.body;
-    const useDb = await User.findOne({email});
-    if (useDb) {
-        res.status(400).send('Username or email already in use');
-    } else {
-        const password = await hashPassword( req.body.password) 
-        console.log(password);
-        const newUser = new User({
-            username,
-            email,
-            password,
-        });
-        await newUser.save();
-        res.send(newUser);
-    }
-});
+router.post('/register', authRegisterController);
     
 router.get('/discord' , passport.authenticate('discord'), (req, res) => {
     console.log(req.user);
