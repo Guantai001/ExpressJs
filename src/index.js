@@ -1,13 +1,16 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const passport = require('passport');
 
+//routes
 const groceriesRouter = require('./routes/groceries');
 const marketsRouter = require('./routes/markets');
 const authRouter = require('./routes/auth');
 // const mongoose = require('mongoose');
 
 require('./database');
+require('./strategies/local');
 
 // mongoose
 //     .connect('mongodb://localhost:27017/expressjs')
@@ -41,10 +44,8 @@ app.use((req, res, next) => {
 });
 
 
-// router.use((req, res, next) => {
-//     if (req.session.user) next();
-//     else res.send(401);
-//   });
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 app.use("/groceries", groceriesRouter);
