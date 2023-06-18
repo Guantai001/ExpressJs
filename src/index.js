@@ -7,21 +7,15 @@ const passport = require('passport');
 const groceriesRouter = require('./routes/groceries');
 const marketsRouter = require('./routes/markets');
 const authRouter = require('./routes/auth');
-// const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo')
 
 require('./database');
 require('./strategies/local');
 
-// mongoose
-//     .connect('mongodb://localhost:27017/expressjs')
-//     .then(() => console.log('Connected to MongoDB'))
-//     .catch((err) => console.log(err));
-
-
-
 
 const app = express();
-const port = 3000;
+const port = 3001;
+
 
 app.use(express.json()); // Used to parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
@@ -31,6 +25,9 @@ app.use(
         secret: 'supersecret',
         resave: false,
         saveUninitialized: false,
+        store: MongoStore.create({ 
+          mongoUrl: 'mongodb://localhost:27017/groceries' }),
+      
     })
 );
 
@@ -43,12 +40,11 @@ app.use((req, res, next) => {
   next();
 });
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use("/groceries", groceriesRouter);
+app.use("/api/groceries", groceriesRouter);
 app.use("/api/markets", marketsRouter);
 app.use("/api/auth", authRouter);
 
