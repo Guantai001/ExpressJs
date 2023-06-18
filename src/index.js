@@ -10,7 +10,8 @@ const authRouter = require('./routes/auth');
 const MongoStore = require('connect-mongo')
 
 require('./database');
-require('./strategies/local');
+// require('./strategies/local');
+require('./strategies/discord');
 
 
 const app = express();
